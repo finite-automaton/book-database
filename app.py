@@ -22,6 +22,7 @@ def clean_date(date_str):
       \rPress Enter to try again.
       \r**********************
     ''')
+    return
   else:
     return return_date
 
@@ -36,8 +37,27 @@ def clean_price(price_str):
       \rPress Enter to try again.
       \r**********************
     ''')
+    return
   else:
     return int(price_float * 100)
+
+
+def clean_id(id_string, options):
+  try:
+    book_id = int(id_string)
+  except ValueError as e:
+    input('''
+      \n***** ID ERROR *****
+      \rThe ID should be a number
+      \rPress Enter to try again.
+      \r**********************
+    ''')
+    return
+  else:
+    if book_id in options:
+        return book_id
+    else:
+      return
 
 
 def add_csv():
@@ -105,7 +125,23 @@ def app():
       input('\nPress enter to return to the main menu')
     elif choice == '3':
       # search book
-      pass
+      id_options = []
+      for book in session.query(Book):
+        id_options.append(book.id)
+      id_error = True
+      while id_error:
+        id_choice = input(f'''
+                          \nId Options: {id_options}
+                          \rBook Id: ''')
+        id_choice = clean_id(id_choice, id_options)
+        if type(id_choice) == int:
+          id_error = False
+      the_book = session.query(Book).filter(Book.id == id_choice).first()
+      print(f'''
+            \n{the_book.title} by {the_book.author}
+            \rPublished: {the_book.published_date}
+            \rPrice: £{the_book.price/100}''')
+      input('Press enter to return to the main menu.')
     elif choice == '4':
       # analysis
       pass
